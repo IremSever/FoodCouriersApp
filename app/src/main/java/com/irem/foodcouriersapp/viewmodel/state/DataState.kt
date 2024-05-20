@@ -1,6 +1,7 @@
 package com.irem.foodcouriersapp.viewmodel.state
 
 import android.graphics.Bitmap
+import com.irem.foodcouriersapp.model.data.Chat
 import java.util.Date
 
 data class DataState(
@@ -11,4 +12,3 @@ data class DataState(
 
 )
 
-data class Chat(val message: String, val bitmap: Bitmap?, val isUser: Boolean, val sentTime: Date = Date())
