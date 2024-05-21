@@ -3,15 +3,9 @@ package com.irem.foodcouriersapp.view
 
 import android.graphics.Bitmap
 import android.util.Log
-
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,20 +22,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrowseGallery
 import androidx.compose.material.icons.rounded.Send
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +59,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.irem.foodcouriersapp.viewmodel.ChatViewModel
 import com.irem.foodcouriersapp.viewmodel.event.ChatUIEvent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
@@ -78,7 +71,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
     val chatViewModel = viewModel<ChatViewModel>()
     val chatState = chatViewModel.chatState.collectAsState().value
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val showTyping by chatViewModel.showTyping.collectAsState()
 
     val bitmap = getBitmap(uriState)
 
@@ -107,7 +100,10 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                     ModelChatItem(response = chat.prompt, sentTime = chat.sentTime)
                 }
             }
+        }
 
+        if (showTyping) {
+            TypingAnimation()
         }
 
         Row(
@@ -284,4 +280,29 @@ private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
     }
 
     return null
+}
+
+@Composable
+fun TypingAnimation(modifier: Modifier = Modifier) {
+    val dots = listOf(".", "..", "...")
+    var dotIndex by remember { mutableStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(500) // Change the delay as needed
+            dotIndex = (dotIndex + 1) % dots.size
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Typing${dots[dotIndex]}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+    }
 }

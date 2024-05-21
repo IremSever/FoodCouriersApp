@@ -8,6 +8,7 @@ import com.irem.foodcouriersapp.model.data.ChatData
 import com.irem.foodcouriersapp.viewmodel.event.ChatUIEvent
 import com.irem.foodcouriersapp.viewmodel.state.DataState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,6 +19,8 @@ class ChatViewModel : ViewModel(){
 
     private val _chatState = MutableStateFlow(DataState())
     val chatState = _chatState.asStateFlow()
+    private val _showTyping = MutableStateFlow(false)
+    val showTyping: StateFlow<Boolean> = _showTyping
 
     init {
         // AI'nin kendini tanıtması
@@ -35,12 +38,14 @@ class ChatViewModel : ViewModel(){
             is ChatUIEvent.SendPrompt -> {
                 if (event.prompt.isNotEmpty()) {
                     addPrompt(event.prompt, event.bitmap)
+                    _showTyping.value = true
 
                     if (_chatState.value.isAwaitingName) {
                         val name = event.prompt.split(" ").first()
                         val responseMessage = "Hello! $name. I can converse in your preferred language. How may I help you today?"
                         addResponse(responseMessage)
                         _chatState.update { it.copy(isAwaitingName = false) }
+                        _showTyping.value = false
                     } else {
                         if (event.bitmap != null) {
                             getResponseWithImage(event.prompt, event.bitmap)
@@ -88,6 +93,7 @@ class ChatViewModel : ViewModel(){
                     }
                 )
             }
+            _showTyping.value = false
         }
     }
 
@@ -101,7 +107,7 @@ class ChatViewModel : ViewModel(){
                     }
                 )
             }
+            _showTyping.value = false
         }
     }
-
-    }
+}
