@@ -3,7 +3,6 @@ package com.irem.foodcouriersapp.viewmodel.event
 import android.graphics.Bitmap
 
 sealed class ChatUIEvent {
-
     data class UpdatePrompt(val newPrompt: String): ChatUIEvent()
 
     data class SendPrompt(

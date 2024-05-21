@@ -8,8 +8,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 
 object ChatData {
-
-    val API_KEY = "NEW_API_KEY"
+    val API_KEY = "YOUR_API_KEY"
 
     suspend fun getResponse(prompt: String): Chat{
 

@@ -26,13 +26,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrowseGallery
 import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,6 +62,11 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColor
+import com.irem.foodcouriersapp.ui.theme.PlaceHolderColor
+import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColor
+import com.irem.foodcouriersapp.ui.theme.TopAppBarColor
+import com.irem.foodcouriersapp.ui.theme.UserRequestColor
 import com.irem.foodcouriersapp.viewmodel.ChatViewModel
 import com.irem.foodcouriersapp.viewmodel.event.ChatUIEvent
 import kotlinx.coroutines.delay
@@ -67,6 +76,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher<PickVisualMediaRequest>, uriState: MutableStateFlow<String>) {
     val chatViewModel = viewModel<ChatViewModel>()
@@ -124,8 +134,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
         ) {
             TextField(
                 modifier = Modifier
-                    .weight(1f)
-                    .background(Color(android.graphics.Color.parseColor("#FDE4CE"))),
+                    .weight(1f),
                 value = chatState.prompt,
                 onValueChange = {
                     chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it))
@@ -158,7 +167,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                             Icon(
                                 imageVector = Icons.Default.BrowseGallery,
                                 contentDescription = "Add Photo",
-                                tint = Color(android.graphics.Color.parseColor("#D22701"))
+                                tint = TopAppBarColor
                             )
                         }
                     }
@@ -179,7 +188,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
-                        tint = Color(android.graphics.Color.parseColor("#D22701"))
+                        tint = TopAppBarColor
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -188,10 +197,34 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                 ),
                 keyboardActions = KeyboardActions(
                     onSend = {
-                        Log.i("ImeAction", "clicked")
+                        chatViewModel.onEvent(
+                            ChatUIEvent.SendPrompt(
+                                chatState.prompt,
+                                bitmap
+                            )
+                        )
+                        uriState.update { "" }
                         keyboardController?.hide()
                     }
                 ),
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedTextColor = TopAppBarColor,
+                    unfocusedTextColor = TopAppBarColor,
+                    disabledTextColor = TopAppBarColor,
+                    disabledIndicatorColor = TopAppBarColor,
+                    focusedIndicatorColor = TopAppBarColor,
+                    unfocusedIndicatorColor = TopAppBarColor,
+                    containerColor = TextFieldBackgroundColor,
+                    disabledPlaceholderColor = PlaceHolderColor,
+                    focusedPlaceholderColor = PlaceHolderColor,
+                    unfocusedPlaceholderColor = PlaceHolderColor,
+                    cursorColor = TopAppBarColor,
+                    selectionColors = TextSelectionColors(
+                        handleColor = TopAppBarColor,
+                        backgroundColor = PlaceHolderColor
+                    )
+                )
             )
         }
     }
@@ -205,7 +238,7 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = Color(android.graphics.Color.parseColor("#AAD15F")))
+                .background(color = UserRequestColor)
                 .padding(14.dp),
         ) {
             bitmap?.let {
@@ -248,13 +281,7 @@ fun ModelChatItem(response: String, sentTime: Date) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(
-                    color = androidx.compose.ui.graphics.Color(
-                        android.graphics.Color.parseColor(
-                            "#FF670E"
-                        )
-                    )
-                )
+                .background(color = ChatBotResponseColor)
                 .padding(14.dp)
         ) {
             Text(

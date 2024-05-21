@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.irem.foodcouriersapp.ui.theme.FoodCouriersAppTheme
+import com.irem.foodcouriersapp.ui.theme.TopAppBarColor
 import com.irem.foodcouriersapp.view.ChatScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(color = Color(android.graphics.Color.parseColor("#D22701")))
+                                    .background(color = TopAppBarColor)
                                     .height(55.dp)
                                     .padding(horizontal = 20.dp)
                             ) {
