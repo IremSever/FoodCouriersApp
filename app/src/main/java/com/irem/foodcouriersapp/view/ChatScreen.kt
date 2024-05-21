@@ -79,7 +79,6 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
     val chatState = chatViewModel.chatState.collectAsState().value
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var isTyping by remember { mutableStateOf(false) }
 
     val bitmap = getBitmap(uriState)
 
@@ -108,11 +107,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                     ModelChatItem(response = chat.prompt, sentTime = chat.sentTime)
                 }
             }
-            item {
-                if (isTyping) {
-                    TypingIndicator()
-                }
-            }
+
         }
 
         Row(
@@ -128,7 +123,6 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                 value = chatState.prompt,
                 onValueChange = {
                     chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it))
-                    isTyping = it.isNotEmpty()
                 },
                 placeholder = {
                     Text(text = "Type a prompt")
@@ -175,7 +169,6 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                     )
                                 )
                                 uriState.update { "" }
-                                isTyping = false
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
@@ -291,81 +284,4 @@ private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
     }
 
     return null
-}
-@Composable
-fun TypingIndicator() {
-    val infiniteTransition = rememberInfiniteTransition()
-
-    val alpha1 by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "Alpha1 Animation"
-    )
-
-    val alpha2 by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, delayMillis = 300),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "Alpha2 Animation"
-    )
-
-    val alpha3 by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, delayMillis = 600),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "Alpha3 Animation"
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Typing...",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = alpha1))
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = alpha2))
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = alpha3))
-            )
-        }
-    }
 }
