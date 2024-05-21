@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -75,6 +76,14 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
 
     val bitmap = getBitmap(uriState)
 
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(chatState.chatList.size) {
+        if (chatState.chatList.isNotEmpty()) {
+            listState.animateScrollToItem(0)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +94,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.Top,
             reverseLayout = true
         ) {
             item {
@@ -165,6 +175,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                     )
                                 )
                                 uriState.update { "" }
+                                keyboardController?.hide()
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
