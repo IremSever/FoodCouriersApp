@@ -14,20 +14,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 
+class ChatViewModel : ViewModel() {
 
-class ChatViewModel : ViewModel(){
-
-    private val _chatState = MutableStateFlow(DataState())
-    val chatState = _chatState.asStateFlow()
-    private val _showTyping = MutableStateFlow(false)
-    val showTyping: StateFlow<Boolean> = _showTyping
+    private val _chatState = MutableStateFlow(DataState()) // Internal mutable state for chat data
+    val chatState = _chatState.asStateFlow() // Public state as StateFlow
+    private val _showTyping = MutableStateFlow(false) // Internal mutable state for typing animation
+    val showTyping: StateFlow<Boolean> = _showTyping // Public state as StateFlow
 
     init {
-        // AI'nin kendini tanıtması
+        // AI introduction message
         _chatState.update { currentState ->
             currentState.copy(
                 chatList = currentState.chatList.toMutableList().apply {
-                    add(Chat("Hello! I am Food Couriers Application. Before we start, what is your name?", null, Date(),false))
+                    add(Chat("Hello! I am Food Couriers Application. Before we start, what is your name?", null, Date(), false))
                 }
             )
         }
@@ -38,14 +37,14 @@ class ChatViewModel : ViewModel(){
             is ChatUIEvent.SendPrompt -> {
                 if (event.prompt.isNotEmpty()) {
                     addPrompt(event.prompt, event.bitmap)
-                    _showTyping.value = true
+                    _showTyping.value = true // Show typing animation
 
                     if (_chatState.value.isAwaitingName) {
                         val name = event.prompt.split(" ").first()
                         val responseMessage = "Hello! $name. I can converse in your preferred language. How may I help you today?"
                         addResponse(responseMessage)
                         _chatState.update { it.copy(isAwaitingName = false) }
-                        _showTyping.value = false
+                        _showTyping.value = false // Hide typing animation
                     } else {
                         if (event.bitmap != null) {
                             getResponseWithImage(event.prompt, event.bitmap)
@@ -65,10 +64,10 @@ class ChatViewModel : ViewModel(){
         _chatState.update {
             it.copy(
                 chatList = it.chatList.toMutableList().apply {
-                    add(0, Chat(prompt, bitmap, Date(),true))
+                    add(0, Chat(prompt, bitmap, Date(), true)) // Add user's message to chat list
                 },
-                prompt = "",
-                bitmap = null
+                prompt = "", // Clear the prompt after sending
+                bitmap = null // Clear the bitmap after sending
             )
         }
     }
@@ -77,7 +76,7 @@ class ChatViewModel : ViewModel(){
         _chatState.update {
             it.copy(
                 chatList = it.chatList.toMutableList().apply {
-                    add(0, Chat(response, null, Date(),false))
+                    add(0, Chat(response, null, Date(), false)) // Add AI's response to chat list
                 }
             )
         }
@@ -89,11 +88,11 @@ class ChatViewModel : ViewModel(){
             _chatState.update {
                 it.copy(
                     chatList = it.chatList.toMutableList().apply {
-                        add(0, chat)
+                        add(0, chat) // Add AI's response to chat list
                     }
                 )
             }
-            _showTyping.value = false
+            _showTyping.value = false // Hide typing animation
         }
     }
 
@@ -103,11 +102,11 @@ class ChatViewModel : ViewModel(){
             _chatState.update {
                 it.copy(
                     chatList = it.chatList.toMutableList().apply {
-                        add(0, chat)
+                        add(0, chat) // Add AI's response with image to chat list
                     }
                 )
             }
-            _showTyping.value = false
+            _showTyping.value = false // Hide typing animation
         }
     }
 }

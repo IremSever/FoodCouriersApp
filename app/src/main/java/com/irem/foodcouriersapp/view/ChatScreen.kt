@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,13 +27,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrowseGallery
 import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,6 +63,16 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColor
+import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColorDark
+import com.irem.foodcouriersapp.ui.theme.ChatMessageColor
+import com.irem.foodcouriersapp.ui.theme.PlaceHolderColor
+import com.irem.foodcouriersapp.ui.theme.PlaceHolderColorDark
+import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColor
+import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColorDark
+import com.irem.foodcouriersapp.ui.theme.TopAppBarColor
+import com.irem.foodcouriersapp.ui.theme.TopAppBarColorDark
+import com.irem.foodcouriersapp.ui.theme.UserRequestColor
 import com.irem.foodcouriersapp.viewmodel.ChatViewModel
 import com.irem.foodcouriersapp.viewmodel.event.ChatUIEvent
 import kotlinx.coroutines.delay
@@ -67,20 +82,27 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher<PickVisualMediaRequest>, uriState: MutableStateFlow<String>) {
-    val chatViewModel = viewModel<ChatViewModel>()
-    val chatState = chatViewModel.chatState.collectAsState().value
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val showTyping by chatViewModel.showTyping.collectAsState()
 
-    val bitmap = getBitmap(uriState)
+    val chatViewModel = viewModel<ChatViewModel>()  // ViewModel instance
 
-    val listState = rememberLazyListState()
+    val chatState = chatViewModel.chatState.collectAsState().value  // Collect chat state
+
+    val keyboardController = LocalSoftwareKeyboardController.current  // Keyboard controller
+
+    val showTyping by chatViewModel.showTyping.collectAsState()  // Show typing state
+
+    val bitmap = getBitmap(uriState)  // Get bitmap from URI
+
+    val listState = rememberLazyListState()  // Remember lazy list state
+
+    val darkTheme = isSystemInDarkTheme()
 
     LaunchedEffect(chatState.chatList.size) {
         if (chatState.chatList.isNotEmpty()) {
-            listState.animateScrollToItem(0)
+            listState.animateScrollToItem(0) // Scroll to top when new message arrives
         }
     }
 
@@ -99,7 +121,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
             reverseLayout = true
         ) {
             item {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))  // Spacer for padding
             }
             itemsIndexed(chatState.chatList) { index, chat ->
                 if (chat.isFromUser) {
@@ -113,7 +135,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
         }
 
         if (showTyping) {
-            TypingAnimation()
+            TypingAnimation() // Show typing animation
         }
 
         Row(
@@ -125,10 +147,10 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
             TextField(
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color(android.graphics.Color.parseColor("#FDE4CE"))),
+                    .padding(bottom = 6.dp, start = 5.dp, end = 5.dp, top = 6.dp),
                 value = chatState.prompt,
                 onValueChange = {
-                    chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it))
+                    chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it)) // Update prompt
                 },
                 placeholder = {
                     Text(text = "Type a prompt")
@@ -145,7 +167,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                         .build()
                                 )
                             },
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
+
                     ) {
                         if (bitmap != null) {
                             Image(
@@ -158,7 +181,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                             Icon(
                                 imageVector = Icons.Default.BrowseGallery,
                                 contentDescription = "Add Photo",
-                                tint = Color(android.graphics.Color.parseColor("#D22701"))
+                                tint = if (darkTheme) ChatBotResponseColorDark else ChatBotResponseColor
                             )
                         }
                     }
@@ -174,12 +197,12 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                         bitmap
                                     )
                                 )
-                                uriState.update { "" }
-                                keyboardController?.hide()
+                                uriState.update { "" }  // Clear URI state
+                                keyboardController?.hide()  // Hide keyboard
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
-                        tint = Color(android.graphics.Color.parseColor("#D22701"))
+                        tint = if (darkTheme) ChatBotResponseColorDark else ChatBotResponseColor
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -188,88 +211,35 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                 ),
                 keyboardActions = KeyboardActions(
                     onSend = {
-                        Log.i("ImeAction", "clicked")
-                        keyboardController?.hide()
+                        chatViewModel.onEvent(
+                            ChatUIEvent.SendPrompt(
+                                chatState.prompt,
+                                bitmap
+                            )
+                        )
+                        uriState.update { "" }  // Clear URI state
+                        keyboardController?.hide()  // Hide keyboard
                     }
                 ),
-            )
-        }
-    }
-}
-@Composable
-fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
-    Column(
-        modifier = Modifier.padding(start = 100.dp, bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = Color(android.graphics.Color.parseColor("#AAD15F")))
-                .padding(14.dp),
-        ) {
-            bitmap?.let {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                        .padding(bottom = 3.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentDescription = "image",
-                    contentScale = ContentScale.Crop,
-                    bitmap = it.asImageBitmap()
-                )
-            }
-
-            Text(
-                text = prompt,
-                fontSize = 17.sp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.padding(3.dp))
-            Text(
-                text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(sentTime),
-                fontSize = 12.sp,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 2.dp, bottom = 2.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun ModelChatItem(response: String, sentTime: Date) {
-    Column(
-        modifier = Modifier.padding(end = 100.dp, bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    color = androidx.compose.ui.graphics.Color(
-                        android.graphics.Color.parseColor(
-                            "#FF670E"
-                        )
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedTextColor = if(darkTheme) ChatMessageColor else TopAppBarColor,
+                    unfocusedTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    disabledTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    disabledIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    focusedIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    unfocusedIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    containerColor = if(darkTheme) TextFieldBackgroundColorDark else TextFieldBackgroundColor,
+                    disabledPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    focusedPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    unfocusedPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    cursorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    selectionColors = TextSelectionColors(
+                        handleColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                        backgroundColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
                     )
                 )
-                .padding(14.dp)
-        ) {
-            Text(
-                text = response,
-                fontSize = 17.sp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.padding(3.dp))
-            Text(
-                text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(sentTime),
-                fontSize = 12.sp,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 2.dp, bottom = 2.dp)
             )
         }
     }
@@ -277,7 +247,7 @@ fun ModelChatItem(response: String, sentTime: Date) {
 
 @Composable
 private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
-    val uri = uriState.collectAsState().value
+    val uri = uriState.collectAsState().value   // Collect URI state
 
     val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -287,33 +257,10 @@ private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
     ).state
 
     if (imageState is AsyncImagePainter.State.Success) {
-        return imageState.result.drawable.toBitmap()
+        return imageState.result.drawable.toBitmap()  // Return bitmap if image load is successful
     }
 
     return null
 }
 
-@Composable
-fun TypingAnimation(modifier: Modifier = Modifier) {
-    val dots = listOf(".", "..", "...")
-    var dotIndex by remember { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(500) // Change the delay as needed
-            dotIndex = (dotIndex + 1) % dots.size
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Typing${dots[dotIndex]}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-    }
-}
