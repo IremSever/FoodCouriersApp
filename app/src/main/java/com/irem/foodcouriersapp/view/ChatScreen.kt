@@ -65,6 +65,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColor
 import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColorDark
+import com.irem.foodcouriersapp.ui.theme.ChatMessageColor
 import com.irem.foodcouriersapp.ui.theme.PlaceHolderColor
 import com.irem.foodcouriersapp.ui.theme.PlaceHolderColorDark
 import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColor
@@ -223,7 +224,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                 singleLine = true,
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
-                    focusedTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    focusedTextColor = if(darkTheme) ChatMessageColor else TopAppBarColor,
                     unfocusedTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
                     disabledTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
                     disabledIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
