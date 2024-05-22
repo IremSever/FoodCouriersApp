@@ -57,8 +57,8 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(color = TopAppBarColor)
-                                    .height(55.dp)
-                                    .padding(horizontal = 20.dp)
+                                    .height(60.dp)
+                                    .padding(horizontal = 25.dp)
                             ) {
                                 Text(
                                     modifier = Modifier

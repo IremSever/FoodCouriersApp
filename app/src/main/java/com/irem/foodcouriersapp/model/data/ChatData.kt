@@ -8,69 +8,75 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 
 object ChatData {
-    val API_KEY = "YOUR_API_KEY"
+    val API_KEY = "YOUR_API_KEY" // API anahtarı
 
-    suspend fun getResponse(prompt: String): Chat{
+    // Prompt'a dayalı olarak AI modelinden yanıt almak için bir suspend fonksiyonu
+    suspend fun getResponse(prompt: String): Chat {
 
+        // "gemini-pro" modeliyle GenerativeModel oluşturma
         val generativeModel = GenerativeModel(
             modelName = "gemini-pro", apiKey = API_KEY
         )
         try {
-            val response = withContext(Dispatchers.IO){
+            // AI modelini çağırarak yanıtı almak için IO bağlamında coroutine çalıştırma
+            val response = withContext(Dispatchers.IO) {
                 generativeModel.generateContent(prompt)
             }
 
+            // Yanıtı Chat nesnesi olarak döndürme
             return Chat(
-                prompt= response.text ?: "Error",
+                prompt = response.text ?: "Error", // Yanıt metni veya hata mesajı
                 bitmap = null,
                 isFromUser = false,
-                sentTime = Date()
+                sentTime = Date() // Mevcut tarih ve saat
 
             )
 
-        }catch (e: Exception){
-
+        } catch (e: Exception) {
+            // Hata durumunda, hata mesajını içeren Chat nesnesi döndürme
             return Chat(
-                prompt= e.message ?: "Error",
+                prompt = e.message ?: "Error",
                 bitmap = null,
                 isFromUser = false,
                 sentTime = Date()
-
             )
-
         }
     }
 
-    suspend fun getResponseWithImage(prompt: String, bitmap: Bitmap): Chat{
+    // Görüntü ve prompt'a dayalı olarak AI modelinden yanıt almak için bir suspend fonksiyonu
+    suspend fun getResponseWithImage(prompt: String, bitmap: Bitmap): Chat {
 
+        // "gemini-pro-vision" modeliyle GenerativeModel oluşturma
         val generativeModel = GenerativeModel(
             modelName = "gemini-pro-vision", apiKey = API_KEY
         )
         try {
-            val inputContent =  content {
-                image(bitmap) // I just
-                text(prompt)
+            // Görüntü ve metni içeren içerik oluşturma
+            val inputContent = content {
+                image(bitmap) // Görüntü içeriği
+                text(prompt) // Metin içeriği
             }
 
-            val response = withContext(Dispatchers.IO){
+            // AI modelini çağırarak yanıtı almak için IO bağlamında coroutine çalıştırma
+            val response = withContext(Dispatchers.IO) {
                 generativeModel.generateContent(inputContent)
             }
 
+            // Yanıtı Chat nesnesi olarak döndürme
             return Chat(
-                prompt= response.text ?: "Error",
+                prompt = response.text ?: "Error", // Yanıt metni veya hata mesajı
                 bitmap = null,
                 isFromUser = false,
-                sentTime = Date()
-
+                sentTime = Date() // Mevcut tarih ve saat
             )
 
-        }catch (e: Exception){
+        } catch (e: Exception) {
+            // Hata durumunda, hata mesajını içeren Chat nesnesi döndürme
             return Chat(
-                prompt= e.message ?: "Error",
+                prompt = e.message ?: "Error",
                 bitmap = null,
                 isFromUser = false,
                 sentTime = Date()
-
             )
         }
     }
