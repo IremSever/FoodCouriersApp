@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.irem.foodcouriersapp.ui.theme.FoodCouriersAppTheme
@@ -50,24 +49,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val isDarkTheme = isSystemInDarkTheme()
+            val isSystemInDarkTheme = isSystemInDarkTheme()
 
-            if (isDarkTheme) {
-                FoodCouriersAppThemeDark {
-                    AppContent()
+            if (isSystemInDarkTheme) {
+                FoodCouriersAppThemeDark(darkTheme = true) {
+                    MainContent()
                 }
             } else {
-                FoodCouriersAppTheme {
-                    AppContent()
+                FoodCouriersAppTheme(darkTheme = false) {
+                    MainContent()
                 }
             }
         }
     }
 
     @Composable
-    fun AppContent() {
-
+    private fun MainContent() {
         val darkTheme = isSystemInDarkTheme()
+
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -85,8 +84,7 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = stringResource(id = R.string.app_name),
                             fontSize = 20.sp,
-                            color = if(darkTheme) TopBarTextColorDark else TopBarTextColor,
-                            fontWeight = FontWeight.Bold
+                            color = if(darkTheme) TopBarTextColorDark else TopBarTextColor
                         )
                     }
                 }
