@@ -79,18 +79,22 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher<PickVisualMediaRequest>, uriState: MutableStateFlow<String>) {
-    val chatViewModel = viewModel<ChatViewModel>()
-    val chatState = chatViewModel.chatState.collectAsState().value
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val showTyping by chatViewModel.showTyping.collectAsState()
 
-    val bitmap = getBitmap(uriState)
+    val chatViewModel = viewModel<ChatViewModel>()  // ViewModel instance
 
-    val listState = rememberLazyListState()
+    val chatState = chatViewModel.chatState.collectAsState().value  // Collect chat state
+
+    val keyboardController = LocalSoftwareKeyboardController.current  // Keyboard controller
+
+    val showTyping by chatViewModel.showTyping.collectAsState()  // Show typing state
+
+    val bitmap = getBitmap(uriState)  // Get bitmap from URI
+
+    val listState = rememberLazyListState()  // Remember lazy list state
 
     LaunchedEffect(chatState.chatList.size) {
         if (chatState.chatList.isNotEmpty()) {
-            listState.animateScrollToItem(0)
+            listState.animateScrollToItem(0) // Scroll to top when new message arrives
         }
     }
 
@@ -109,7 +113,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
             reverseLayout = true
         ) {
             item {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))  // Spacer for padding
             }
             itemsIndexed(chatState.chatList) { index, chat ->
                 if (chat.isFromUser) {
@@ -123,7 +127,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
         }
 
         if (showTyping) {
-            TypingAnimation()
+            TypingAnimation() // Show typing animation
         }
 
         Row(
@@ -137,7 +141,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                     .weight(1f),
                 value = chatState.prompt,
                 onValueChange = {
-                    chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it))
+                    chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it)) // Update prompt
                 },
                 placeholder = {
                     Text(text = "Type a prompt")
@@ -183,8 +187,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                         bitmap
                                     )
                                 )
-                                uriState.update { "" }
-                                keyboardController?.hide()
+                                uriState.update { "" }  // Clear URI state
+                                keyboardController?.hide()  // Hide keyboard
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
@@ -203,11 +207,12 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                 bitmap
                             )
                         )
-                        uriState.update { "" }
-                        keyboardController?.hide()
+                        uriState.update { "" }  // Clear URI state
+                        keyboardController?.hide()  // Hide keyboard
                     }
                 ),
                 singleLine = true,
+                maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
                     focusedTextColor = TopAppBarColor,
                     unfocusedTextColor = TopAppBarColor,
@@ -229,82 +234,10 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
         }
     }
 }
-@Composable
-fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
-    Column(
-        modifier = Modifier.padding(start = 100.dp, bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = UserRequestColor)
-                .padding(14.dp),
-        ) {
-            bitmap?.let {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                        .padding(bottom = 3.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentDescription = "image",
-                    contentScale = ContentScale.Crop,
-                    bitmap = it.asImageBitmap()
-                )
-            }
-
-            Text(
-                text = prompt,
-                fontSize = 17.sp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.padding(3.dp))
-            Text(
-                text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(sentTime),
-                fontSize = 12.sp,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 2.dp, bottom = 2.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun ModelChatItem(response: String, sentTime: Date) {
-    Column(
-        modifier = Modifier.padding(end = 100.dp, bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = ChatBotResponseColor)
-                .padding(14.dp)
-        ) {
-            Text(
-                text = response,
-                fontSize = 17.sp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.padding(3.dp))
-            Text(
-                text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(sentTime),
-                fontSize = 12.sp,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 2.dp, bottom = 2.dp)
-            )
-        }
-    }
-}
 
 @Composable
 private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
-    val uri = uriState.collectAsState().value
+    val uri = uriState.collectAsState().value   // Collect URI state
 
     val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -314,33 +247,9 @@ private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
     ).state
 
     if (imageState is AsyncImagePainter.State.Success) {
-        return imageState.result.drawable.toBitmap()
+        return imageState.result.drawable.toBitmap()  // Return bitmap if image load is successful
     }
 
     return null
 }
 
-@Composable
-fun TypingAnimation(modifier: Modifier = Modifier) {
-    val dots = listOf(".", "..", "...")
-    var dotIndex by remember { mutableStateOf(0) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(500) // Change the delay as needed
-            dotIndex = (dotIndex + 1) % dots.size
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Typing${dots[dotIndex]}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-    }
-}
