@@ -10,7 +10,7 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val TextFieldBackgroundColor = Color(0xFFF2DEA6)
+val TextFieldBackgroundColor = Color.White
 val TopAppBarColor = Color(0xFF842B45)
 val PlaceHolderColor = Color(0x66842B45)
 val UserRequestColor = Color(0xFF7EA45E)

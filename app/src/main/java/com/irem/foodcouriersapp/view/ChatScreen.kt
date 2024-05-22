@@ -138,7 +138,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
         ) {
             TextField(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(bottom = 6.dp, start = 5.dp, end = 5.dp, top = 6.dp),
                 value = chatState.prompt,
                 onValueChange = {
                     chatViewModel.onEvent(ChatUIEvent.UpdatePrompt(it)) // Update prompt
