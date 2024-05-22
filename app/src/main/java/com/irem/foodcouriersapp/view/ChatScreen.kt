@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,9 +64,13 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColor
+import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColorDark
 import com.irem.foodcouriersapp.ui.theme.PlaceHolderColor
+import com.irem.foodcouriersapp.ui.theme.PlaceHolderColorDark
 import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColor
+import com.irem.foodcouriersapp.ui.theme.TextFieldBackgroundColorDark
 import com.irem.foodcouriersapp.ui.theme.TopAppBarColor
+import com.irem.foodcouriersapp.ui.theme.TopAppBarColorDark
 import com.irem.foodcouriersapp.ui.theme.UserRequestColor
 import com.irem.foodcouriersapp.viewmodel.ChatViewModel
 import com.irem.foodcouriersapp.viewmodel.event.ChatUIEvent
@@ -91,6 +96,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
     val bitmap = getBitmap(uriState)  // Get bitmap from URI
 
     val listState = rememberLazyListState()  // Remember lazy list state
+
+    val darkTheme = isSystemInDarkTheme()
 
     LaunchedEffect(chatState.chatList.size) {
         if (chatState.chatList.isNotEmpty()) {
@@ -159,7 +166,8 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                                         .build()
                                 )
                             },
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
+
                     ) {
                         if (bitmap != null) {
                             Image(
@@ -172,7 +180,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                             Icon(
                                 imageVector = Icons.Default.BrowseGallery,
                                 contentDescription = "Add Photo",
-                                tint = TopAppBarColor
+                                tint = if (darkTheme) ChatBotResponseColorDark else ChatBotResponseColor
                             )
                         }
                     }
@@ -193,7 +201,7 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                             },
                         imageVector = Icons.Rounded.Send,
                         contentDescription = "Send prompt",
-                        tint = TopAppBarColor
+                        tint = if (darkTheme) ChatBotResponseColorDark else ChatBotResponseColor
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -215,20 +223,20 @@ fun ChatScreen(paddingValues: PaddingValues, imagePicker: ActivityResultLauncher
                 singleLine = true,
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
-                    focusedTextColor = TopAppBarColor,
-                    unfocusedTextColor = TopAppBarColor,
-                    disabledTextColor = TopAppBarColor,
-                    disabledIndicatorColor = TopAppBarColor,
-                    focusedIndicatorColor = TopAppBarColor,
-                    unfocusedIndicatorColor = TopAppBarColor,
-                    containerColor = TextFieldBackgroundColor,
-                    disabledPlaceholderColor = PlaceHolderColor,
-                    focusedPlaceholderColor = PlaceHolderColor,
-                    unfocusedPlaceholderColor = PlaceHolderColor,
-                    cursorColor = TopAppBarColor,
+                    focusedTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    unfocusedTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    disabledTextColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    disabledIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    focusedIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    unfocusedIndicatorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                    containerColor = if(darkTheme) TextFieldBackgroundColorDark else TextFieldBackgroundColor,
+                    disabledPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    focusedPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    unfocusedPlaceholderColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
+                    cursorColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
                     selectionColors = TextSelectionColors(
-                        handleColor = TopAppBarColor,
-                        backgroundColor = PlaceHolderColor
+                        handleColor = if(darkTheme) TopAppBarColorDark else TopAppBarColor,
+                        backgroundColor = if(darkTheme) PlaceHolderColorDark else PlaceHolderColor,
                     )
                 )
             )
@@ -253,4 +261,5 @@ private fun getBitmap(uriState: MutableStateFlow<String>): Bitmap? {
 
     return null
 }
+
 

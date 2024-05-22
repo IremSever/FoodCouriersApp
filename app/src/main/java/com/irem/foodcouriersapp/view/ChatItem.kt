@@ -3,6 +3,7 @@ package com.irem.foodcouriersapp.view
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,13 +22,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColor
+import com.irem.foodcouriersapp.ui.theme.ChatBotResponseColorDark
+import com.irem.foodcouriersapp.ui.theme.ChatMessageColor
 import com.irem.foodcouriersapp.ui.theme.UserRequestColor
+import com.irem.foodcouriersapp.ui.theme.UserRequestColorDark
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
+
+    val darkTheme = isSystemInDarkTheme()
+
     Column(
         modifier = Modifier.padding(start = 100.dp, bottom = 16.dp)  // Padding for user message
     ) {
@@ -35,7 +42,7 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
             modifier = Modifier
                 .fillMaxWidth()  // Fill the width of the parent
                 .clip(RoundedCornerShape(12.dp))  // Rounded corners
-                .background(color = UserRequestColor)  // Background color for user messages
+                .background(color = if (darkTheme) UserRequestColorDark else UserRequestColor)  // Background color for user messages
                 .padding(14.dp),  // Padding inside the message container
         ) {
             bitmap?.let {
@@ -54,7 +61,7 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
             Text(
                 text = prompt,  // User's message text
                 fontSize = 17.sp,  // Font size
-                color = MaterialTheme.colorScheme.onPrimary  // Text color
+                color = ChatMessageColor  // Text color
             )
             Spacer(modifier = Modifier.padding(3.dp))  // Space between message and time
             Text(
@@ -71,6 +78,9 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?, sentTime: Date) {
 
 @Composable
 fun ModelChatItem(response: String, sentTime: Date) {
+
+    val darkTheme = isSystemInDarkTheme()
+
     Column(
         modifier = Modifier.padding(end = 100.dp, bottom = 16.dp)  // Padding for model message
     ) {
@@ -78,13 +88,13 @@ fun ModelChatItem(response: String, sentTime: Date) {
             modifier = Modifier
                 .fillMaxWidth()  // Fill the width of the parent
                 .clip(RoundedCornerShape(12.dp))  // Rounded corners
-                .background(color = ChatBotResponseColor)  // Background color for model responses
+                .background(color = if(darkTheme) ChatBotResponseColorDark else  ChatBotResponseColor)  // Background color for model responses
                 .padding(14.dp)  // Padding inside the message container
         ) {
             Text(
                 text = response,  // Model's response text
                 fontSize = 17.sp,  // Font size
-                color = MaterialTheme.colorScheme.onPrimary  // Text color
+                color = ChatMessageColor  // Text color
             )
             Spacer(modifier = Modifier.padding(3.dp))  // Space between message and time
             Text(

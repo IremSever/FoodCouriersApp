@@ -15,3 +15,5 @@ val TopAppBarColor = Color(0xFF842B45)
 val PlaceHolderColor = Color(0x66842B45)
 val UserRequestColor = Color(0xFF7EA45E)
 val ChatBotResponseColor = Color(0xFFEA873D)
+
+val TopBarTextColor = Color.White
