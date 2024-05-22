@@ -10,7 +10,7 @@ import java.util.Date
 object ChatData {
     //API anahtarı
     //Eğer API anatarınız bulunmuyorsa, https://aistudio.google.com/app/apikey linkinden bir API anahtarı oluşturup aşağıdaki "YOUR_API_KEY" kısmına yapıştırarak uygulamayı kullanabilirsiniz.
-    val API_KEY = "AIzaSyCxVs98z_QS7F28FFr0irIoa5-DejRufI4"
+    val API_KEY = "YOUR_API_KEY"
 
     // Prompt'a dayalı olarak AI modelinden yanıt almak için bir suspend fonksiyonu
     suspend fun getResponse(prompt: String): Chat {
